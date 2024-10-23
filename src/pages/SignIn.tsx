@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface Inputs {
   email: string;
@@ -23,16 +24,46 @@ const SignIn = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setIsLoading(true);
-    console.log(data);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/auth/sign-in`,
+        {
+          email: data.email,
+          password: data.password,
+        }
+      );
+      localStorage.setItem("jwtToken", response.data.token);
+      // setRole(response.data.user.role);
+      navigate("/dashboard");
+    } catch (err: any) {
+      if (err.response?.data?.msg === "User not registered") {
+        setError("email", {
+          type: "manual",
+          message: "Email id not registered",
+        });
+      } else {
+        setError("password", {
+          type: "manual",
+          message: "Incorrect password",
+        });
+      }
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <>
-      <Card className="border-none shadow-none mx-auto max-w-sm">
+      <Card className="border-none shadow-none mx-auto max-w-sm fromTop duration-500">
         <CardHeader className="text-center pb-10 ">
           <CardTitle className="text-4xl">Welcome back</CardTitle>
           <CardDescription>Enter your information to sign in</CardDescription>

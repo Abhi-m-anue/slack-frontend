@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface Inputs {
   name: string;
@@ -24,16 +25,48 @@ const SignUp = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<Inputs>();
 
+  const navigate = useNavigate();
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setLoading(true);
-    console.log(data);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/auth/sign-up`,
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        }
+      );
+      localStorage.setItem("jwtToken", response.data.token);
+      console.log(response);
+      // setRole(response.data.user.role);
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.log(err);
+      if (err.response?.data?.msg === "Duplicate value entered for email") {
+        setError("email", {
+          type: "manual",
+          message: "Email id already registered",
+        });
+      } else {
+        setError("root", {
+          type: "manual",
+          message: "something went wrong",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <>
-      <Card className="border-none shadow-none mx-auto max-w-sm">
+      <Card className="border-none shadow-none mx-auto max-w-sm fromTop duration-500">
         <CardHeader className="text-center pt-0 pb-10">
           <CardTitle className="text-4xl">Get started</CardTitle>
           <CardDescription>
@@ -44,7 +77,9 @@ const SignUp = () => {
           <div className="grid gap-4">
             <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-2">
-                <Label className="text-sm" htmlFor="Name">Name</Label>
+                <Label className="text-sm" htmlFor="Name">
+                  Name
+                </Label>
                 <Input
                   className="border-slate-500 focus:border-none"
                   id="first-name"
@@ -58,7 +93,9 @@ const SignUp = () => {
                 )}
               </div>
               <div className="grid gap-2">
-                <Label className="text-sm" htmlFor="email">Email</Label>
+                <Label className="text-sm" htmlFor="email">
+                  Email
+                </Label>
                 <Input
                   className="border-slate-500 focus:border-none"
                   id="email"
@@ -73,13 +110,16 @@ const SignUp = () => {
                 )}
               </div>
               <div className="grid gap-2">
-                <Label className="text-sm" htmlFor="password">Password</Label>
+                <Label className="text-sm" htmlFor="password">
+                  Password
+                </Label>
                 <Input
                   className="border-slate-500 focus:border-none"
                   id="password"
                   type="password"
                   {...register("password", {
                     required: "Password is required",
+                    minLength: { value: 6, message: "Password is too short" },
                   })}
                 />
                 {errors.password && (
@@ -88,7 +128,16 @@ const SignUp = () => {
                   </span>
                 )}
               </div>
-              <Button type="submit" className="bg-violet-800 text-white hover:bg-violet-900 hover:text-white" disabled={loading}>
+              {errors.root && (
+                <span className="text-red-500 text-xs">
+                  {errors.root.message}
+                </span>
+              )}
+              <Button
+                type="submit"
+                className="bg-violet-800 text-white hover:bg-violet-900 hover:text-white"
+                disabled={loading}
+              >
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <div className="w-4 h-4 border-2 border-t-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
