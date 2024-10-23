@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
-const Navbar = () => {
+const NavbarTop = () => {
   return (
     <>
       <div className="p-6">
@@ -14,4 +14,4 @@ const Navbar = () => {
     </>
   );
 };
-export default Navbar;
+export default NavbarTop;

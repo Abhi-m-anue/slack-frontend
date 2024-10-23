@@ -1,9 +1,11 @@
+import NavbarTop from "@/components/Navbar/NavbarTop";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Landing = () => {
   return (
     <>
+      <NavbarTop></NavbarTop>
       <div className="text-8xl font-semibold text-center tracking-tighter fromTop pt-20">
         <p> Made for people. </p>
         <p className="text-violet-900">Built for productivity.</p>

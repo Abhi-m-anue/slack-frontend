@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import NavbarTop from "@/components/Navbar/NavbarTop";
 
 interface Inputs {
   name: string;
@@ -66,6 +67,7 @@ const SignUp = () => {
 
   return (
     <>
+      <NavbarTop></NavbarTop>
       <Card className="border-none shadow-none mx-auto max-w-sm fromTop duration-500">
         <CardHeader className="text-center pt-0 pb-10">
           <CardTitle className="text-4xl">Get started</CardTitle>
