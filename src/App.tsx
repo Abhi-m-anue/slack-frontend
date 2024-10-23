@@ -4,6 +4,7 @@ import Landing from "./pages/Landing";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import ChannelContextProvider from "./contexts/ChannelContextProvider";
 
 function App() {
   return (
@@ -13,7 +14,14 @@ function App() {
           <Route path="/" Component={Landing} />
           <Route path="/sign-in" Component={SignIn} />
           <Route path="/sign-up" Component={SignUp} />
-          <Route path="/dashboard" Component={Dashboard} />
+          <Route
+            path="/dashboard"
+            element={
+              <ChannelContextProvider>
+                <Dashboard></Dashboard>
+              </ChannelContextProvider>
+            }
+          />
         </Routes>
       </Router>
     </>

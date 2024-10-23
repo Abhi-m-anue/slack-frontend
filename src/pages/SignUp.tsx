@@ -44,8 +44,7 @@ const SignUp = () => {
         }
       );
       localStorage.setItem("jwtToken", response.data.token);
-      console.log(response);
-      // setRole(response.data.user.role);
+      localStorage.setItem("user", JSON.stringify(response.data?.user));
       navigate("/dashboard");
     } catch (err: any) {
       console.log(err);

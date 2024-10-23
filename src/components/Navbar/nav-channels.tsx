@@ -1,9 +1,4 @@
-import {
-  ArrowUpRight,
-  Link,
-  MoreHorizontal, 
-  Trash2,
-} from "lucide-react"
+import { ArrowUpRight, Link, MoreHorizontal, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -11,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -20,28 +15,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useContext } from "react";
+import ChannelContext from "@/contexts/ChannelContext";
 
-export function NavChannels({
-  favorites,
-}: {
-  favorites: {
-    name: string
-    url: string
-    emoji: string
-  }[]
-}) {
-  const { isMobile } = useSidebar()
+export function NavChannels() {
+  const { isMobile } = useSidebar();
+
+  const { channels, selectedChannel, setSelectedChannel } = useContext(ChannelContext);
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Channels</SidebarGroupLabel>
       <SidebarMenu>
-        {favorites.map((item) => (
-          <SidebarMenuItem key={item.name}>
+        {channels?.map((item) => (
+          <SidebarMenuItem key={item._id} >
             <SidebarMenuButton asChild>
-              <a href={item.url} title={item.name}>
-                <span>{item.emoji}</span>
+              <a className={`${item._id === selectedChannel?._id && 'text-sidebar-accent-foreground bg-sidebar-accent'}`} href="#" title={item.name} onClick={()=> setSelectedChannel(item)}>
+                <span>#</span>
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
@@ -57,7 +48,6 @@ export function NavChannels({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-               
                 <DropdownMenuItem>
                   <Link className="text-muted-foreground" />
                   <span>Copy Link</span>
@@ -77,5 +67,5 @@ export function NavChannels({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

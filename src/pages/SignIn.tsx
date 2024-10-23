@@ -42,7 +42,7 @@ const SignIn = () => {
         }
       );
       localStorage.setItem("jwtToken", response.data.token);
-      // setRole(response.data.user.role);
+      localStorage.setItem("user", JSON.stringify(response.data?.user));
       navigate("/dashboard");
     } catch (err: any) {
       if (err.response?.data?.msg === "User not registered") {

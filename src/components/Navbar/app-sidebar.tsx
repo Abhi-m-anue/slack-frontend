@@ -44,43 +44,6 @@ const data = {
       icon: Search,
     },
   ],
-  favorites: [
-    {
-      name: "Project Management & Task Tracking",
-      url: "#",
-      emoji: "#",
-    },
-    {
-      name: "Family Recipe Collection & Meal Planning",
-      url: "#",
-      emoji: "#",
-    },
-    {
-      name: "Fitness Tracker & Workout Routines",
-      url: "#",
-      emoji: "#",
-    },
-    {
-      name: "Book Notes & Reading List",
-      url: "#",
-      emoji: "#",
-    },
-    {
-      name: "Sustainable Gardening Tips & Plant Care",
-      url: "#",
-      emoji: "#",
-    },
-    {
-      name: "Language Learning Progress & Resources",
-      url: "#",
-      emoji: "#",
-    },
-    {
-      name: "Home Renovation Ideas & Budget Tracker",
-      url: "#",
-      emoji: "#",
-    },
-  ],
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -90,7 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarContent className="bg-white">
-        <NavChannels favorites={data.favorites} />
+        <NavChannels/>
       </SidebarContent>
       <SidebarFooter className="bg-white">
         <NavUser user={data.user}></NavUser>
