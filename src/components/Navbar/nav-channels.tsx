@@ -22,16 +22,25 @@ import ChannelContext from "@/contexts/ChannelContext";
 export function NavChannels() {
   const { isMobile } = useSidebar();
 
-  const { channels, selectedChannel, setSelectedChannel } = useContext(ChannelContext);
+  const { channels, selectedChannel, setSelectedChannel } =
+    useContext(ChannelContext);
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Channels</SidebarGroupLabel>
       <SidebarMenu>
         {channels?.map((item) => (
-          <SidebarMenuItem key={item._id} >
+          <SidebarMenuItem key={item._id}>
             <SidebarMenuButton asChild>
-              <a className={`${item._id === selectedChannel?._id && 'text-sidebar-accent-foreground bg-sidebar-accent'}`} href="#" title={item.name} onClick={()=> setSelectedChannel(item)}>
+              <a
+                className={`${
+                  item._id === selectedChannel?._id &&
+                  "text-sidebar-accent-foreground bg-sidebar-accent"
+                }`}
+                href="#"
+                title={item.name}
+                onClick={() => setSelectedChannel(item)}
+              >
                 <span>#</span>
                 <span>{item.name}</span>
               </a>

@@ -1,11 +1,11 @@
 import socket from "@/api/socket";
 import ChannelContext from "@/contexts/ChannelContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Input } from "./ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Button } from "./ui/button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { SendHorizontal } from "lucide-react";
 
 interface inputType {
   message: string;
@@ -24,11 +24,19 @@ const Chat = () => {
   const [userName, setUserName] = useState<string>("");
   const { selectedChannel } = useContext(ChannelContext);
 
+  const chatRef = useRef<HTMLDivElement | null>(null);
+
   const { register, handleSubmit, reset } = useForm<inputType>();
 
   const onSubmit: SubmitHandler<inputType> = (data) => {
-    if(selectedChannel){
-        socket.emit('sendMessage',userName,userId,selectedChannel._id,data.message)
+    if (selectedChannel) {
+      socket.emit(
+        "sendMessage",
+        userName,
+        userId,
+        selectedChannel._id,
+        data.message
+      );
     }
     reset();
   };
@@ -71,58 +79,95 @@ const Chat = () => {
     if (storedUser) {
       const { userId, name } = JSON.parse(storedUser);
       setUserId(userId);
-      setUserName(name)
+      setUserName(name);
     }
 
-    socket.on('receiveMessage',(senderName, senderId, createdAt, text)=>{
-        setChats((prevChats) => [
-            ...prevChats,
-            { senderName, senderId, createdAt, text }
-          ]);
-    })
+    socket.on("receiveMessage", (senderName, senderId, createdAt, text) => {
+      setChats((prevChats) => [
+        ...prevChats,
+        { senderName, senderId, createdAt, text },
+      ]);
+    });
 
-    return ()=>{
-        socket.off('receiveMessage')
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  },[]);
+  }, [chats]);
 
   return (
     <>
-      <div className="mx-auto w-full max-w-3xl rounded-xl bg-muted/50 flex flex-col justify-end">
-        <div className="max-h-[calc(100vh-200px)] overflow-y-scroll">
-          {chats.map((chat,index) => (
-            <div
-              key={index}
-              className={`flex ${
-                chat.senderId === userId ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`p-3 rounded-lg ${
-                  chat.senderId === userId
-                    ? "bg-green-200 text-right"
-                    : "bg-gray-200 text-left"
-                } max-w-xs break-words`}
-              >
-                <div className="font-semibold">{chat.senderName}</div>
-                <div>{chat.text}</div>
-              </div>
+      <div className="w-full flex flex-col justify-end flex-grow  border-t-[1px]">
+        <div className="max-h-[calc(100vh-150px)] overflow-y-scroll">
+          {chats.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <p className="text-gray-500">
+                No messages yet. Start the conversation!
+              </p>
             </div>
-          ))}
+          ) : (
+            chats.map((chat, index) => {
+              const date = new Date(chat.createdAt);
+              return (
+                <>
+                  <div
+                    key={index}
+                    className={`flex gap-3 p-5 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent`}
+                  >
+                    <div
+                      className={`flex-shrink-0 capitalize text-white text-sm font-semibold h-7 w-7 mt-1 rounded-full flex justify-center items-center${
+                        chat.senderId === userId
+                          ? " bg-violet-600"
+                          : " bg-gray-200"
+                      }`}
+                    >
+                      {chat.senderName[0]}
+                    </div>
+                    <div className={`rounded-lg break-words`}>
+                      <div className="flex items-center gap-2">
+                        <div className="font-semibold capitalize">
+                          {chat.senderName}
+                        </div>
+                        <div className="text-xs">
+                          {date.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </div>
+                      <div className="text-sm text-black">{chat.text}</div>
+                    </div>
+                  </div>
+                </>
+              );
+            })
+          )}
+          <div ref={chatRef}></div>
         </div>
 
         <form
-          className="sticky bottom-0 bg-white p-4"
+          className="sticky bottom-0 px-4 py-2 bg-white shadow-lg flex items-center gap-3"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="flex flex-row gap-4">
+          <div className="relative flex-grow">
             <Input
               {...register("message", { required: true })}
-              className="flex-grow"
+              className="w-full p-3 pl-4 pr-12 bg-gray-100 rounded-full border border-gray-300    focus:border-none"
+              placeholder="Type a message..."
               autoComplete="off"
-            ></Input>
-            <Button type="submit">Send</Button>
+            />
           </div>
+          <button
+            type="submit"
+            className="p-2 rounded-full bg-violet-600 text-white hover:bg-violet-700 "
+          >
+            <SendHorizontal size={25} />
+          </button>
         </form>
       </div>
     </>
