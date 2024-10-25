@@ -27,7 +27,10 @@ const SignIn = () => {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({defaultValues:{
+    email : "test@gmail.com",
+    password : "secret"
+  }});
 
   const navigate = useNavigate();
 
@@ -50,11 +53,16 @@ const SignIn = () => {
           type: "manual",
           message: "Email id not registered",
         });
-      } else {
+      } else if(err.response?.data?.msg === "Incorrect password"){
         setError("password", {
           type: "manual",
           message: "Incorrect password",
         });
+      }
+      else{
+        setError("root",{
+          message : "Something went wrong"
+        })
       }
       console.log(err);
     } finally {
@@ -101,6 +109,13 @@ const SignIn = () => {
                 {errors.password && (
                   <span className="text-red-500 text-xs">
                     {errors.password.message}
+                  </span>
+                )}
+              </div>
+              <div>
+              {errors.root && (
+                  <span className="text-red-500 text-xs">
+                    {errors.root.message}
                   </span>
                 )}
               </div>

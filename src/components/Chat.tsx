@@ -22,6 +22,7 @@ const Chat = () => {
   const [chats, setChats] = useState<chatType[]>([]);
   const [userId, setUserId] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const { selectedChannel } = useContext(ChannelContext);
 
   const chatRef = useRef<HTMLDivElement | null>(null);
@@ -44,6 +45,7 @@ const Chat = () => {
   const navigate = useNavigate();
 
   const fetchChats = async (channelId: any) => {
+    setLoading(true);
     const token = localStorage.getItem("jwtToken");
     if (token) {
       try {
@@ -58,6 +60,8 @@ const Chat = () => {
         setChats(response.data?.chats);
       } catch (err) {
         console.log(err);
+      } finally {
+        setLoading(false)
       }
     } else {
       navigate("/sign-in");
@@ -104,8 +108,10 @@ const Chat = () => {
     <>
       <div className="w-full flex flex-col justify-end flex-grow  border-t-[1px]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-scroll">
-          {chats.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full">
+          {loading ? (
+            <div className="w-10 h-10 border-4 border-gray-300 border-t-2 border-t-transparent rounded-full animate-spin my-56 mx-auto"></div>
+          ) : chats.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full fromTop">
               <p className="text-gray-500">
                 No messages yet. Start the conversation!
               </p>
@@ -117,7 +123,7 @@ const Chat = () => {
                 <>
                   <div
                     key={index}
-                    className={`flex gap-3 p-5 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent`}
+                    className={`flex gap-3 p-5 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent fromTop`}
                   >
                     <div
                       className={`flex-shrink-0 capitalize text-white text-sm font-semibold h-7 w-7 mt-1 rounded-full flex justify-center items-center${
