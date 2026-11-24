@@ -73,10 +73,13 @@ const Chat = () => {
     if (selectedChannel) {
       fetchChats(selectedChannel._id);
     }
+  }, [selectedChannel]);
+
+  useEffect(() => {
     if (selectedChannel && userId) {
       socket.emit("joinChannel", userId, selectedChannel._id);
     }
-  }, [selectedChannel]);
+  }, [selectedChannel, userId]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
